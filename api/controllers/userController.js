@@ -2,6 +2,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
+const { roles } = require("../roles");
+const { Permission } = require('accesscontrol');
 
 // ------------- utilities -------------------------
 
@@ -113,4 +115,22 @@ exports.deleteUser = async (req, res, next) => {
     }
 }
 
+// ---------------------- access control --------------------------
+
+// ------------- grant access based on type of user ----------------
+exports.grantAccess = (action, resource) => {
+    return async (req, res, next) => {
+        try {
+            const permisssion = roles.can(req.user.role)[action](resource);
+            if (!Permission.granted) {
+                return res.status(401).json({
+                    error: "Permission denied"
+                });
+            }
+            next()
+        } catch (error) {
+            next(error)
+        }
+    }
+}  
 
