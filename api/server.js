@@ -4,12 +4,13 @@ const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const path = require("path")
 const User = require("./models/userModel");
-const routes = require("./routes/route.js");
-const { append } = require("express/lib/response");
+const routes = require("./routes/routes");
 
 require("dotenv").config({
     path: path.join(__dirname, "../.env")
 });
+
+const app = express();
 
 const PORT = process.env.PORT || 3000;
 
@@ -18,9 +19,9 @@ mongoose.connect(process.env.mongo_dev_url)
         console.log("Database connection successful");
     });
 
-append.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
-append.use(async (req, res, next) => {
+app.use(async (req, res, next) => {
     if (req.headers["x-access-token"]) {
         const accessToken = req.headers["x-access-token"];
         const { userId, expiryToken } = await jwt.verify(accessToken, process.env.JWT_SECRET);
