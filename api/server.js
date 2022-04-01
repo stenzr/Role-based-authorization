@@ -14,7 +14,7 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-mongoose.connect(process.env.mongo_dev_url)
+mongoose.connect(process.env.DB_DEV_URI)
     .then(() => {
         console.log("Database connection successful");
     });
