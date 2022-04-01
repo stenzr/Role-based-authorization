@@ -2,16 +2,20 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const User = require('../models/userModel');
+
+// ------------- utilities -------------------------
 
 // TODO: generate salt
 const encryptPassword = async (password) => {
     return await bcrypt.hash(password, 10);
 }
 
-const validateFunction = async (password, passwordHash) => {
+const validatePassword = async (password, passwordHash) => {
     return await bcrypt.compare(password, passwordHash);
 }
 
+// -------------- user sign up ----------------------
 exports.signup = async (req, res, next) => {
     try {
         const { email, password, role } = req.body
@@ -28,6 +32,27 @@ exports.signup = async (req, res, next) => {
         })
     } catch (error) {
         next(error)
+    }
+}
+
+// -------------- user login --------------------
+exports.login = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return next(new Error('Email does not exist'));
+        const validPassword = await validatePassword(password, user.password);
+        if (!validPassword) return next(new Error('Password is not correct'))
+        const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+            expiresIn: "1d"
+        });
+        await User.findByIdAndUpdate(user._id, { accessToken })
+        res.status(200).json({
+            data: { email: user.email, role: user.role },
+            accessToken
+        })
+    } catch (error) {
+        next(error);
     }
 }
 
