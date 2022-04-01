@@ -117,7 +117,7 @@ exports.deleteUser = async (req, res, next) => {
 
 // ---------------------- access control --------------------------
 
-// ------------- grant access based on type of user ----------------
+// ------------- grant access based on type of user ---------------
 exports.grantAccess = (action, resource) => {
     return async (req, res, next) => {
         try {
@@ -134,3 +134,17 @@ exports.grantAccess = (action, resource) => {
     }
 }  
 
+// -------------- grant access only to logged in user ---------------
+exports.allowLoggedIn = async (req, res, next) => {
+    try {
+        const user = res.locals.loggedInUser;
+        if (!user) 
+            return res.status(401).json({
+                error: "Log In to continue"
+            });
+            req.user = user;
+            next();
+    } catch (error) {
+        next(error);
+    }
+}
