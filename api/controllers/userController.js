@@ -18,7 +18,7 @@ exports.signup = async (req, res, next) => {
         const passwordHash = await encryptPassword(password);
         const newUser = new User({ email, password: passwordHash, role: role || "normalUser" });
         const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
-            expiresIn: "Id"
+            expiresIn: "1d"
         });
         newUser.accessToken = accessToken;
         await newUser.save();
@@ -30,3 +30,4 @@ exports.signup = async (req, res, next) => {
         next(error)
     }
 }
+
