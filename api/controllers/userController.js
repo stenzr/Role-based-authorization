@@ -1,5 +1,4 @@
 // require essential modules
-const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
@@ -66,7 +65,6 @@ exports.getUsers = async (req, res, next) => {
         data: users
     });
 }
-
 
 // -------------------- get user by specific id ---------------
 
