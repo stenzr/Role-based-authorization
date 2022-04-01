@@ -85,3 +85,18 @@ exports.getUser = async (req, res, next) => {
 
 // ------------------- update user details ---------------------
 
+exports.updateUser = async (req, res, next) => {
+    try {
+        const update = req.body
+        const userId = req.params.userId;
+        await User.findByIdAndUpdate(userId, update);
+        const user = await User.findById(userId)
+        res.status(200).json({
+            data: user,
+            message: "User information has been updated"
+        });
+    } catch (error) {
+        next(error)
+    }
+}
+
